@@ -76,8 +76,10 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 		Left:     left,
 	}
 	precedence := p.curPrecedence()
+	//fmt.Printf("Parsing infix expression with left=%v, operator=%s, precedence=%d\n", left, p.curToken.Literal, precedence)
 	p.nextToken()
 	expression.Right = p.parseExpression(precedence)
+	//fmt.Printf("Parsed right expression: %v\n", expression.Right)
 
 	return expression
 }
@@ -231,7 +233,6 @@ func (p *Parser) peekPrecedence() int {
 	if p, ok := precedences[p.peekToken.Type]; ok {
 		return p
 	}
-
 	return LOWEST
 }
 
@@ -239,6 +240,5 @@ func (p *Parser) curPrecedence() int {
 	if p, ok := precedences[p.curToken.Type]; ok {
 		return p
 	}
-
 	return LOWEST
 }
