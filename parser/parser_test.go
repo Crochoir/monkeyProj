@@ -168,7 +168,7 @@ func TestParsingPrefixExpressions(t *testing.T) {
 		{"!5", "!", 5},
 		{"-15", "-", 15},
 		{"!true;", "!", true},
-		{"!false", "!", false},
+		{"!false;", "!", false},
 	}
 
 	for _, tt := range prefixTests {
@@ -241,7 +241,7 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"5 == 5;", 5, "==", 5},
 		{"5 != 5;", 5, "!=", 5},
 		{"true == true", true, "==", true},
-		{"true != true", true, "!=", false},
+		{"true != false", true, "!=", false},
 		{"false == false", false, "==", false},
 	}
 
@@ -362,6 +362,22 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"((5 + 5) * 2)",
 		},
 		{
+			"true",
+			"true",
+		},
+		{
+			"false",
+			"false",
+		},
+		{
+			" 3 > 5 == false",
+			"((3 > 5) == false)",
+		},
+		{
+			"3 < 5 == true",
+			"((3 < 5) == true)",
+		},
+		{
 			"2 / (5 + 5)",
 			"(2 / (5 + 5))",
 		},
@@ -370,8 +386,8 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"(-(5 + 5))",
 		},
 		{
-			"!(true == false)",
-			"(!(true == false))",
+			"!(true == true)",
+			"(!(true == true))",
 		},
 	}
 	for _, tt := range tests {
@@ -430,6 +446,7 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{}, ope
 	}
 
 	if !testLiteralExpression(t, opExp.Left, left) {
+		t.Errorf("just checking left")
 		return false
 	}
 
@@ -439,6 +456,7 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{}, ope
 	}
 
 	if !testLiteralExpression(t, opExp.Right, right) {
+		t.Errorf("just checking right")
 		return false
 	}
 
@@ -452,11 +470,11 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 		return false
 	}
 	if bo.Value != value {
-		t.Errorf("bo.Value not %t. got=%t.", value, bo.Value)
+		t.Errorf("bo.Value not %t. got=%t. (bo: %#v)", value, bo.Value, bo)
 		return false
 	}
 	if bo.TokenLiteral() != fmt.Sprintf("%t", value) {
-		t.Errorf("bo.TokenLiteral not %s, got=%s", fmt.Sprintf("%t", value), bo.TokenLiteral())
+		t.Errorf("bo.TokenLiteral not %s, got=%s. (bo: %#v)", fmt.Sprintf("%t", value), bo.TokenLiteral(), bo)
 		return false
 	}
 	return true
