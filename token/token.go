@@ -43,7 +43,9 @@ const (
 	RETURN   = "RETURN"
 
 	//data types
-	STRING = "STRING"
+	STRING   = "STRING"
+	LBRACKET = "["
+	RBRACKET = "]"
 )
 
 type Token struct {
